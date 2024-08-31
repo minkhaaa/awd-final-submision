@@ -1,0 +1,12 @@
+<div class="bg-white shadow rounded p-4 mb-4">
+  <h4 class="font-bold">{{ topic.title }}</h4>
+  <p>{{ topic.body }}</p>
+  {% if topic.attachment %}
+  <a
+    href="{% url 'download_attachment' topic.id %}"
+    hx-boost="false"
+    class="text-blue-500 underline"
+    >Download Attachment</a
+  >
+  {% endif %}
+</div>

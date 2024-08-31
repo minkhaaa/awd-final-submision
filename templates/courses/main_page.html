@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Skill Hive - Main Page{% endblock %}
+
+{% block content %}
+<div class="container mx-auto mt-8 flex space-x-8">
+
+    <!-- News Feed Section -->
+    <div class="w-1/2">
+        <h2 class="text-2xl font-bold mb-4">News Feed</h2>
+        <!-- Static News Feed Items (we'll leave these as is for now) -->
+        <div class="bg-white shadow rounded p-4 mb-4">
+            <p class="font-bold">
+                <a href="#" class="text-blue-500 hover:underline">John Doe</a>
+            </p>
+            <p>This week has been rough.</p>
+            <p class="text-sm text-gray-500">23 mins ago</p>
+        </div>
+    </div>
+
+    <!-- Courses Section -->
+    <div class="w-1/2">
+        <!-- Tabs -->
+        <div class="flex space-x-4 mb-4 border-b border-gray-300">
+            <button class="px-4 py-2 text-gray-600 hover:text-black border-b-2 border-transparent hover:border-blue-500 focus:outline-none">
+                All courses
+            </button>
+            <button class="px-4 py-2 text-blue-600 border-b-2 border-blue-500 focus:outline-none">
+                My courses
+            </button>
+        </div>
+        <!-- Courses List -->
+        <div class="bg-white shadow rounded p-4">
+            {% for course in courses %}
+            <div class="border-b border-gray-300 pb-4 mb-4">
+                    <a href="{% url 'course_detail' course.id %}" hx-boost="false" class="font-bold text-blue-500 hover:underline">
+    {{ course.title }}
+</a>
+                <p class="text-sm text-gray-500">{{ course.instructor.user.username }}</p>
+                <p>{{ course.description }}</p>
+                <a href="{% url 'rate_course' course.id %}" hx-get="{% url 'rate_course' course.id %}" hx-target="#course-{{ course.id }}" hx-swap="outerHTML" class="text-blue-500 underline">Rate Course</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

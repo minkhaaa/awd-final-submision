@@ -1,0 +1,66 @@
+    {% extends "base.html" %}
+    {% block title %}{{ topic.title }}{% endblock %}
+    {% block content %}
+
+<div class="w-full max-w-4xl mx-auto mt-8">
+  <div class="bg-white shadow-lg rounded-lg p-6 mb-8">
+    <h2 class="text-2xl font-bold mb-4">{{ course.title }}</h2>
+    <p class="text-sm text-gray-500">
+      Instructor: {{ course.instructor.user.username }}
+    </p>
+    <p>{{ course.description }}</p>
+  </div>
+  <div class="bg-white shadow-lg rounded-lg p-6 mb-8">
+    <h2 class="text-xl font-bold mt-8"> Topics </h2>
+    <!-- List of Topics -->
+    <div id="topics-list" class="mt-4">
+      {% for topic in topics %} {% include "courses/_topic.html" %} {% endfor %}
+    </div>
+  </div>
+    <!-- Form to Add New Topic -->
+<div class="bg-white shadow-lg rounded-lg p-6">
+      <h4 class="text-xl font-bold mb-4">Add New Topic</h4>
+      <form
+        id="form"
+        hx-post="{% url 'add_topic' course.id %}"
+        hx-encoding="multipart/form-data"
+        hx-target="#topics-list"
+        hx-swap="beforeend"
+        hx-on="htmx:afterRequest: this.reset()"
+      >
+        {% csrf_token %}
+        <div class="mb-4">
+          <label for="title" class="block text-gray-700">Title</label>
+          <input
+            type="text"
+            name="title"
+            class="w-full border border-gray-300 rounded px-3 py-2"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label for="body" class="block text-gray-700">Body</label>
+          <textarea
+            name="body"
+            class="w-full border border-gray-300 rounded px-3 py-2"
+            required
+          ></textarea>
+        </div>
+        <div class="mb-4">
+          <label for="attachment" class="block text-gray-700"
+            >Attachment (Optional)</label
+          >
+          <input
+            type="file"
+            name="attachment"
+            class="w-full border border-gray-300 rounded px-3 py-2"
+          />
+        </div>
+        <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded">
+          Add Topic
+        </button>
+      </form>
+    </div>
+  </div>
+
+{% endblock %}
