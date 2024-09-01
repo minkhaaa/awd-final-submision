@@ -1,3 +1,4 @@
+arabic-reshaper==3.0.0
 black==24.8.0
 cookiecutter==2.6.0
 crispy-tailwind==1.0.3
@@ -8,9 +9,14 @@ django-htmx==1.19.0
 django-tailwind==3.8.0
 djhtml==3.0.6
 docopt==0.6.2
+html5lib==1.1
 humanfriendly==10.0
 ipython==8.12.3
 nbconvert==7.16.4
 pipdeptree==2.23.1
+pyHanko==0.25.1
+pypdf==4.3.1
+python-bidi==0.6.0
 setuptools==58.1.0
+svglib==1.5.1
 yarg==0.1.9

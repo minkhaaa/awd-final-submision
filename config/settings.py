@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     "theme",
     "accounts",
     "courses",
-    "widget_tweaks",
     "django_htmx",
     "django_browser_reload",
     "django.contrib.admin",

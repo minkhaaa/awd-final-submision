@@ -5,12 +5,14 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import SignUpForm
+from .forms import CustomUserCreationForm
 
 
 def check_field(request, field_name):
-    form = SignUpForm(request.GET)
+    form = CustomUserCreationForm(request.GET)
 
+    print("i'm accessed")
+    print(field_name)
     if form.is_valid():
         return render(
             request, "accounts/error_messages.html", {"messages": []}
@@ -27,16 +29,12 @@ def check_field(request, field_name):
 
 def sign_up(request):
     if request.method == "POST":
-        form = SignUpForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect(
-                "sign_in"
-            )  # Redirect to the sign-in page after successful registration
-        else:
-            print(form.errors)
+            return redirect("sign_in")
     else:
-        form = SignUpForm()
+        form = CustomUserCreationForm()
     return render(request, "accounts/sign_up.html", {"form": form})
 
 
