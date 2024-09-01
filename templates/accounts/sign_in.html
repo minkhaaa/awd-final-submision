@@ -1,0 +1,36 @@
+{% extends "base.html" %} {% block title %}Skill Hive - Main Page{% endblock %}
+{% block content %}
+<div class="bg-white shadow rounded p-4">
+  <form hx-boost="False" method="post" class="mt-6 text-center">
+    {% csrf_token %}
+    <div class="mb-4">
+      <input
+        type="text"
+        name="username"
+        class="w-min border border-gray-300 rounded-lg px-3 py-2"
+        placeholder="Username"
+        required
+      />
+    </div>
+    <div class="mb-6">
+      <input
+        type="password"
+        name="password"
+        class="w-min border border-gray-300 rounded-lg px-3 py-2"
+        placeholder="Password"
+        required
+      />
+    </div>
+    <button
+      type="submit"
+      class="bg-blue-500 text-white py-2 px-4 rounded-lg font-semibold"
+    >
+      Sign In
+    </button>
+  </form>
+  <div class="mt-6 text-center">
+    <p class="text-gray-600 text-sm mt-4">Don't have an account?</p>
+    <a href="#" class="text-blue-500 hover:underline">Sign Up</a>
+  </div>
+</div>
+{% endblock %}
