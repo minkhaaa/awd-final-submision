@@ -14,6 +14,10 @@ urlpatterns = [
         name="download_attachment",
     ),
     path("rate-course/<int:course_id>/", views.main_page, name="rate_course"),
+    # path("", views.course_list, name="course_list"),
+    path("enroll/<int:course_id>/", views.enroll_in_course, name="enroll_in_course"),
+    path("all-courses/", views.all_courses_view, name="all_courses"),
+    path("my-courses/", views.my_courses_view, name="my_courses"),
 ]
 
 if settings.DEBUG:

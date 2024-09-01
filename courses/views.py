@@ -1,10 +1,46 @@
 import os
 
+from django.contrib.auth.decorators import login_required
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404, render
+from django.template.loader import render_to_string
 
-from .models import Course, Topic
+from .models import Course, Enrollment, Topic
+
+
+def all_courses_view(request):
+    courses = Course.objects.all()
+    return render(
+        request,
+        "courses/tabs_with_courses.html",
+        {"courses": courses, "active_tab": "all_courses"},
+    )
+
+
+def my_courses_view(request):
+    if request.user.is_authenticated:
+        if request.user.is_teacher:
+            courses = Course.objects.filter(instructor=request.user.teacher)
+        else:
+            courses = Course.objects.filter(enrollments__user=request.user)
+    else:
+        courses = Course.objects.none()
+    return render(
+        request,
+        "courses/tabs_with_courses.html",
+        {"courses": courses, "active_tab": "my_courses"},
+    )
+
+
+@login_required
+def enroll_in_course(request, course_id):
+    course = Course.objects.get(id=course_id)
+    if not Enrollment.objects.filter(user=request.user, course=course).exists():
+        Enrollment.objects.create(user=request.user, course=course)
+        request.user.is_student = True
+        request.user.save()
+    return redirect("course_list")
 
 
 def main_page(request):

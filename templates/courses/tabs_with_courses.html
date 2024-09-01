@@ -1,0 +1,36 @@
+{% with active_tab|default:'all_courses' as active_tab %}
+    <div class="w-1/2 tab-group">
+        <!-- Tabs -->
+        <div class="flex space-x-4 mb-4 border-b border-gray-300">
+            <button hx-get="{% url 'all_courses' %}"
+                    hx-target=".tab-group"
+                    hx-swap="outerHTML"
+                    class="px-4 py-2 {% if active_tab == 'all_courses' %} text-blue-600 border-blue-500 {% else %} text-gray-600 hover:text-black border-transparent hover:border-blue-500 {% endif %} focus:outline-none">
+                All courses
+            </button>
+            {% if user.is_authenticated %}
+            <button hx-get="{% url 'my_courses' %}"
+                    hx-target=".tab-group"
+                    hx-swap="outerHTML"
+                    class="px-4 py-2 {% if active_tab == 'my_courses' %} text-blue-600 border-blue-500 {% else %} text-gray-600 hover:text-black border-transparent hover:border-blue-500 {% endif %} focus:outline-none">
+                My courses
+            </button>
+            {% endif %}
+        </div>
+        <!-- Courses List -->
+        <div class="bg-white shadow rounded p-4">
+            {% for course in courses %}
+            <div class="border-b border-gray-300 pb-4 mb-4">
+                <a href="{% url 'course_detail' course.id %}" class="font-bold text-blue-500 hover:underline">
+                    {{ course.title }}
+                </a>
+                <p class="text-sm text-gray-500">{{ course.instructor.user.first_name }} {{ course.instructor.user.last_name }}</p>
+                <p>{{ course.description }}</p>
+                {% if user.is_authenticated and not user.is_teacher %}
+                <a href="{% url 'rate_course' course.id %}" hx-get="{% url 'rate_course' course.id %}" hx-target="#course-{{ course.id }}" hx-swap="outerHTML" class="text-blue-500 underline">Enroll</a>
+              {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endwith %}

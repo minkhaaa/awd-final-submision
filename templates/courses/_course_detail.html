@@ -10,6 +10,7 @@
     </p>
     <p>{{ course.description }}</p>
   </div>
+  {% if user.is_authenticated %}
   <div class="bg-white shadow-lg rounded-lg p-6 mb-8">
     <h2 class="text-xl font-bold mt-8"> Topics </h2>
     <!-- List of Topics -->
@@ -62,5 +63,5 @@
       </form>
     </div>
   </div>
-
+{% endif %}
 {% endblock %}
