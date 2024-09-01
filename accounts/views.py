@@ -2,10 +2,27 @@
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
-from django.http import HttpRequest
-from django.shortcuts import redirect, render
+from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import SignUpForm
+
+
+def check_field(request, field_name):
+    form = SignUpForm(request.GET)
+
+    if form.is_valid():
+        return render(
+            request, "accounts/error_messages.html", {"messages": []}
+        )  # No errors, return an empty response
+    else:
+        error_message = form.errors.get(field_name)
+        if error_message:
+            return render(
+                request, "accounts/error_messages.html", {"messages": error_message}
+            )
+        else:
+            return HttpResponse("<div class='errors'> </div>")
 
 
 def sign_up(request):
