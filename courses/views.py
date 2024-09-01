@@ -6,15 +6,29 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 
+from accounts.models import Student
+
 from .models import Course, Enrollment, Topic
 
 
 def all_courses_view(request):
     courses = Course.objects.all()
+    enrolled_course_ids = []
+
+    if request.user.is_authenticated:
+        enrolled_course_ids = list(
+            Enrollment.objects.filter(user=request.user).values_list(
+                "course_id", flat=True
+            )
+        )
     return render(
         request,
         "courses/tabs_with_courses.html",
-        {"courses": courses, "active_tab": "all_courses"},
+        {
+            "courses": courses,
+            "active_tab": "all_courses",
+            "enrolled_course_ids": enrolled_course_ids,
+        },
     )
 
 
@@ -35,20 +49,38 @@ def my_courses_view(request):
 
 @login_required
 def enroll_in_course(request, course_id):
-    course = Course.objects.get(id=course_id)
+    course = get_object_or_404(Course, id=course_id)
     if not Enrollment.objects.filter(user=request.user, course=course).exists():
         Enrollment.objects.create(user=request.user, course=course)
-        request.user.is_student = True
-        request.user.save()
-    return redirect("course_list")
+
+        # Check if the user is not already a student and create a Student object
+        if not request.user.is_student:
+            request.user.is_student = True
+            request.user.save()
+            Student.objects.create(user=request.user)
+    # Return a partial update to replace the "Enroll" button with "Enrolled"
+    return HttpResponse('<span class="text-green-500 font-bold">Enrolled</span>')
 
 
 def main_page(request):
     courses = Course.objects.all()
-    return render(request, "courses/main_page.html", {"courses": courses})
+    enrolled_course_ids = []
 
+    if request.user.is_authenticated:
+        enrolled_course_ids = list(
+            Enrollment.objects.filter(user=request.user).values_list(
+                "course_id", flat=True
+            )
+        )
 
-from .models import Course, Topic
+    return render(
+        request,
+        "courses/main_page.html",
+        {
+            "courses": courses,
+            "enrolled_course_ids": enrolled_course_ids,
+        },
+    )
 
 
 def course_detail(request, course_id):

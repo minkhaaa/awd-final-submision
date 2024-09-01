@@ -26,9 +26,19 @@
                 </a>
                 <p class="text-sm text-gray-500">{{ course.instructor.user.first_name }} {{ course.instructor.user.last_name }}</p>
                 <p>{{ course.description }}</p>
-                {% if user.is_authenticated and not user.is_teacher %}
-                <a href="{% url 'rate_course' course.id %}" hx-get="{% url 'rate_course' course.id %}" hx-target="#course-{{ course.id }}" hx-swap="outerHTML" class="text-blue-500 underline">Enroll</a>
-              {% endif %}
+{% if user.is_authenticated and not user.is_teacher %}
+    {% if course.id not in enrolled_course_ids %}
+        <a href="{% url 'enroll_in_course' course.id %}"
+           hx-get="{% url 'enroll_in_course' course.id %}"
+           hx-target="this"
+           hx-swap="outerHTML"
+           class="text-blue-500 underline">
+          Enroll
+        </a>
+    {% else %}
+        <span class="text-gray-500">In-progress</span>
+    {% endif %}
+{% endif %}
             </div>
             {% endfor %}
         </div>
