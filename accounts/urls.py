@@ -10,4 +10,5 @@ urlpatterns = [
     # path("sign-up/check-email/", views.check_email, name="check_email"),
     path("sign-up/check/<str:field_name>/", views.check_field, name="check_field"),
     # path('rate-course/<int:course_id>/', views.rate_course, name='rate_course'),
+    path("profile/<str:username>/", views.profile_view, name="profile_page"),
 ]

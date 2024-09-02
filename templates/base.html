@@ -15,7 +15,9 @@
         <div class="flex items-center space-x-4">
           <a hx-boost="false" href="{% url 'main_page' %}" class="text-2xl font-bold text-gray-800 hover:text-gray-600">SkillHive</a>
           <nav class="hidden md:flex space-x-8">
-            <a href="#" class="text-gray-600 hover:text-gray-800 transition duration-300">Profile</a>
+          {% if user.is_authenticated %}
+          <a href="{% url 'profile_page' request.user.username %}">Profile</a>
+            {% endif %}
             <a href="#" class="text-gray-600 hover:text-gray-800 transition duration-300">Social</a>
           </nav>
         </div>
