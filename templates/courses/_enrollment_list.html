@@ -1,0 +1,18 @@
+<div class="w-full max-w-4xl mx-auto mt-8">
+  <div class="bg-white shadow-lg rounded-lg p-6 mb-8">
+    <h3 class="text-xl font-bold mb-4">Students Enrolled in {{ course.title }}</h3>
+
+    {% if enrollments.exists %}
+      <ul class="divide-y divide-gray-200">
+        {% for enrollment in enrollments %}
+          <li class="py-4">
+            <p class="text-lg font-semibold">{{ enrollment.user.first_name }} {{ enrollment.user.last_name }}</p>
+            <p class="text-sm text-gray-500">{{ enrollment.user.email }}</p>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-gray-500">No students are enrolled in this course yet.</p>
+    {% endif %}
+  </div>
+</div>

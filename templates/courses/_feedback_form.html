@@ -1,0 +1,12 @@
+<form method="post" hx-post="{% url 'submit_feedback' course.id %}" hx-target="#feedback-form-container" hx-swap="outerHTML">
+  {% csrf_token %}
+  <div class="mb-4">
+    {{ form.rating.label_tag }}<br>
+    {{ form.rating }}
+  </div>
+  <div class="mb-4">
+    {{ form.comment.label_tag }}<br>
+    {{ form.comment }}
+  </div>
+  <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Submit Feedback</button>
+</form>

@@ -1,0 +1,8 @@
+
+  <div id="enrolled-topics" hx-swap-oob="true" class="bg-white shadow-lg rounded-lg p-6 mb-8">
+    <h2 class="text-xl font-bold mt-8"> Topics </h2>
+    <!-- List of Topics -->
+    <div id="topics-list" class="mt-4">
+      {% for topic in topics %} {% include "courses/_topic.html" %} {% endfor %}
+    </div>
+  </div>
