@@ -3,15 +3,51 @@ from logging import log
 
 from django.contrib.auth.decorators import login_required
 from django.core.files.storage import FileSystemStorage
+from django.core.paginator import Paginator
 from django.db.models import Avg
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 
-from accounts.models import Student
+from accounts.models import StatusUpdate, Student
 
 from .forms import CourseForm, RatingForm
 from .models import Course, Enrollment, Rating, Topic
+
+
+def news_feed_view(request):
+    # Fetch all status updates for the news feed
+    updates = StatusUpdate.objects.all().order_by("-updated_at")
+    paginator = Paginator(updates, 10)  # Display 10 updates per page
+    page_number = request.GET.get("page", 1)
+    page_obj = paginator.get_page(page_number)
+
+    # Fetch all courses to be passed to the 'tabs_with_courses.html'
+    courses = Course.objects.all()
+    enrolled_course_ids = []
+
+    # If the user is authenticated, get their enrolled course IDs
+    if request.user.is_authenticated:
+        enrolled_course_ids = list(
+            Enrollment.objects.filter(user=request.user).values_list(
+                "course_id", flat=True
+            )
+        )
+
+    # Check if the request is an HTMX request
+    if "HX-Request" in request.headers:
+        return render(request, "accounts/_status_updates.html", {"page_obj": page_obj})
+
+    # Pass all necessary context to the main page template
+    return render(
+        request,
+        "courses/main_page.html",
+        {
+            "page_obj": page_obj,
+            "courses": courses,  # Pass the courses
+            "enrolled_course_ids": enrolled_course_ids,  # Pass the enrolled course IDs
+        },
+    )
 
 
 @login_required

@@ -5,7 +5,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("", views.main_page, name="main_page"),
+    path("", views.news_feed_view, name="main_page"),
     path("course/<int:course_id>/", views.course_detail, name="course_detail"),
     path("course/<int:course_id>/add-topic/", views.add_topic, name="add_topic"),
     path(
@@ -39,6 +39,7 @@ urlpatterns = [
         name="view_enrollments",
     ),
     path("courses/create/", views.create_course_view, name="create_course"),
+    path("news-feed/", views.news_feed_view, name="news_feed"),
 ]
 
 if settings.DEBUG:

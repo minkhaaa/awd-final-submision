@@ -7,18 +7,20 @@
     <!-- News Feed Section -->
     <div class="w-1/2">
         <h2 class="text-2xl font-bold mb-4">News Feed</h2>
-        <!-- Static News Feed Items (we'll leave these as is for now) -->
-        <div class="bg-white shadow rounded p-4 mb-4">
-            <p class="font-bold">
-                <a href="#" class="text-blue-500 hover:underline">John Doe</a>
-            </p>
-            <p>This week has been rough.</p>
-            <p class="text-sm text-gray-500">23 mins ago</p>
+
+        <!-- Dynamic News Feed Items with HTMX for Infinite Scrolling -->
+        <div id="news-feed">
+            {% include 'accounts/_status_updates.html' %}
         </div>
+
+        {% if page_obj.has_next %}
+            <div id="load-more-trigger" hx-get="?page={{ page_obj.next_page_number }}" hx-trigger="revealed" hx-target="#news-feed" hx-swap="beforeend">
+                Loading more...
+            </div>
+        {% endif %}
     </div>
 
     <!-- Courses Section -->
-
     {% include 'courses/tabs_with_courses.html' %}
 </div>
 {% endblock %}
