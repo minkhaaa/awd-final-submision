@@ -9,6 +9,7 @@ from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFoun
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 
+from accounts.forms import StatusUpdateForm
 from accounts.models import StatusUpdate, Student
 
 from .forms import CourseForm, RatingForm
@@ -16,6 +17,23 @@ from .models import Course, Enrollment, Rating, Topic
 
 
 def news_feed_view(request):
+    # Handle the status update form submission
+    if request.method == "POST":
+        form = StatusUpdateForm(request.POST)
+        if form.is_valid():
+            status_update = form.save(commit=False)
+            status_update.user = request.user
+            status_update.save()
+            if "HX-Request" in request.headers:
+                return render(
+                    request,
+                    "accounts/_status_update_single.html",
+                    {"update": status_update},
+                )
+            return redirect("main_page")
+    else:
+        form = StatusUpdateForm()
+
     # Fetch all status updates for the news feed
     updates = StatusUpdate.objects.all().order_by("-updated_at")
     paginator = Paginator(updates, 10)  # Display 10 updates per page
@@ -34,8 +52,8 @@ def news_feed_view(request):
             )
         )
 
-    # Check if the request is an HTMX request
-    if "HX-Request" in request.headers:
+    # Check if the request is an HTMX request for infinite scroll
+    if "HX-Request" in request.headers and "page" in request.GET:
         return render(request, "accounts/_status_updates.html", {"page_obj": page_obj})
 
     # Pass all necessary context to the main page template
@@ -43,7 +61,8 @@ def news_feed_view(request):
         request,
         "courses/main_page.html",
         {
-            "page_obj": page_obj,
+            "form": form,  # Pass the status update form
+            "page_obj": page_obj,  # Pass the paginated status updates
             "courses": courses,  # Pass the courses
             "enrolled_course_ids": enrolled_course_ids,  # Pass the enrolled course IDs
         },

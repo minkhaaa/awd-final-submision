@@ -8,6 +8,17 @@
     <div class="w-1/2">
         <h2 class="text-2xl font-bold mb-4">News Feed</h2>
 
+        <!-- Status Update Form -->
+        {% if user.is_authenticated %}
+        <div id="status-update-form" class="mb-4">
+            <form method="post" action="{% url 'main_page' %}" hx-post="{% url 'main_page' %}" hx-target="#news-feed" hx-swap="beforebegin">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-400 transition duration-300">Post</button>
+            </form>
+        </div>
+        {% endif %}
+
         <!-- Dynamic News Feed Items with HTMX for Infinite Scrolling -->
         <div id="news-feed">
             {% include 'accounts/_status_updates.html' %}
