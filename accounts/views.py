@@ -45,8 +45,6 @@ def profile_view(request, username):
 def check_field(request, field_name):
     form = CustomUserCreationForm(request.GET)
 
-    print("i'm accessed")
-    print(field_name)
     if form.is_valid():
         return render(
             request, "accounts/error_messages.html", {"messages": []}
@@ -91,10 +89,6 @@ def sign_out(request):
     return render(
         request, "accounts/sign_out.html"
     )  # Redirect to the home page or another page as needed
-
-
-def profile(request: HttpRequest):
-    return render(request, "accounts/profile.html")
 
 
 # Create your views here.

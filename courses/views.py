@@ -12,7 +12,8 @@ from django.template.loader import render_to_string
 from accounts.forms import StatusUpdateForm
 from accounts.models import StatusUpdate, Student
 
-from .forms import CourseForm, RatingForm
+from .forms import RatingForm  # Assuming you have a form for submitting ratings
+from .forms import CourseForm
 from .models import Course, Enrollment, Rating, Topic
 
 
@@ -116,6 +117,10 @@ def all_courses_view(request):
 def view_enrollments(request, course_id):
     course = get_object_or_404(Course, id=course_id)
 
+    # Only the instructor of the course should be able to view enrollments
+    if not request.user.is_teacher or request.user.teacher != course.instructor:
+        return HttpResponseForbidden("You do not have permission to view this page.")
+
     # Fetch all students enrolled in this course
     enrollments = Enrollment.objects.filter(course=course).select_related("user")
 
@@ -139,13 +144,6 @@ def my_courses_view(request):
         "courses/tabs_with_courses.html",
         {"courses": courses, "active_tab": "my_courses"},
     )
-
-
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, render
-
-from .forms import RatingForm  # Assuming you have a form for submitting ratings
-from .models import Course
 
 
 @login_required

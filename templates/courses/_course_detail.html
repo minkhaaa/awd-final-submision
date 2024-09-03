@@ -40,8 +40,8 @@
       {% endif %}
       {% if user.is_authenticated and not is_enrolled and not user.is_teacher %}
         <button hx-get="{% url 'enroll_in_course' course.id %}"
-                hx-target="#enrollments-list"
-                hx-swap="innerHTML"
+                hx-target="this"
+                hx-swap="outerHTML"
                 hx-trigger="click, keydown:Enter"
                 class="text-green-500 underline">
           Enroll

@@ -1,59 +1,183 @@
-from django.test import TestCase
+from django.contrib.auth import get_user_model
+from django.test import Client, TestCase
 from django.urls import reverse
 
-from accounts.models import Teacher, User
+from accounts.models import Student, Teacher
 
-from .models import Course, Topic
+from .models import Course, Enrollment
+
+User = get_user_model()
 
 
-class CourseModelTest(TestCase):
+class AllCoursesViewTests(TestCase):
+
     def setUp(self):
-        self.user = User.objects.create(
-            username="robert", password="testpassword", is_teacher=True
-        )
+        self.client = Client()
+        self.user = User.objects.create_user(username="testuser", password="testpass")
         self.teacher = Teacher.objects.create(user=self.user)
         self.course = Course.objects.create(
-            title="Discrete Maths",
-            description="Build your foundation with this 5 weeks course.",
-            instructor=self.teacher,
-        )
-        self.topic = Topic.objects.create(
-            course=self.course,
-            title="Introduction to Discrete Maths",
-            body="This is the first topic of the course.",
+            title="Test Course", description="Test Description", instructor=self.teacher
         )
 
-    def test_course_creation(self):
-        self.assertEqual(self.course.title, "Discrete Maths")
-        self.assertEqual(
-            self.course.description, "Build your foundation with this 5 weeks course."
-        )
-        self.assertEqual(self.course.instructor.user.username, "robert")
+    def test_all_courses_view_for_guest_user(self):
+        response = self.client.get(reverse("all_courses"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Test Course")
 
-    def test_topic_creation(self):
-        self.assertEqual(self.topic.title, "Introduction to Discrete Maths")
-        self.assertEqual(self.topic.body, "This is the first topic of the course.")
-        self.assertEqual(self.topic.course.title, "Discrete Maths")
+    def test_all_courses_view_for_authenticated_user(self):
+        self.client.login(username="testuser", password="testpass")
+        response = self.client.get(reverse("all_courses"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Test Course")
 
 
-class CourseViewTest(TestCase):
+class MyCoursesViewTests(TestCase):
+
     def setUp(self):
-        self.user = User.objects.create(
-            username="robert", password="testpassword", is_teacher=True
+        self.client = Client()
+
+        # Create a user and then associate with a Teacher instance
+        self.teacher_user = User.objects.create_user(
+            username="teacher", password="testpass", email="teacher@example.com"
         )
-        self.teacher = Teacher.objects.create(user=self.user)
+        self.teacher_user.is_teacher = True
+        self.teacher_user.save()
+        self.teacher = Teacher.objects.create(user=self.teacher_user)
+
+        # Create a user and then associate with a Student instance
+        self.student_user = User.objects.create_user(
+            username="student", password="testpass", email="student@example.com"
+        )
+        self.student_user.is_student = True
+        self.student_user.save()
+        self.student = Student.objects.create(user=self.student_user)
+
+        # Create a course assigned to the teacher
         self.course = Course.objects.create(
-            title="Discrete Maths",
-            description="Build your foundation with this 5 weeks course.",
-            instructor=self.teacher,
+            title="Test Course", description="Test Description", instructor=self.teacher
         )
 
-    def test_main_page_view(self):
-        response = self.client.get(reverse("main_page"))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "courses/main_page.html")
+        # Enroll the student in the course
+        Enrollment.objects.create(user=self.student_user, course=self.course)
 
-    def test_course_detail_view(self):
-        response = self.client.get(reverse("course_detail", args=[self.course.id]))
+    def test_my_courses_view_for_teacher(self):
+        self.client.login(username="teacher", password="testpass")
+        response = self.client.get(reverse("my_courses"))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "courses/course_detail.html")
+        self.assertContains(response, "Test Course")
+
+    def test_my_courses_view_for_student(self):
+        self.client.login(username="student", password="testpass")
+        response = self.client.get(reverse("my_courses"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Test Course")
+
+    def test_my_courses_view_for_guest(self):
+        response = self.client.get(reverse("my_courses"))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Test Course")
+
+
+class EnrollInCourseTests(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+
+        # Create a user and then associate with a Teacher instance
+        self.teacher_user = User.objects.create_user(
+            username="teacher", password="testpass", email="teacher@example.com"
+        )
+        self.teacher_user.is_teacher = True
+        self.teacher_user.save()
+        self.teacher = Teacher.objects.create(user=self.teacher_user)
+
+        # Create a user and then associate with a Student instance
+        self.student_user = User.objects.create_user(
+            username="student", password="testpass", email="student@example.com"
+        )
+        self.student_user.is_student = True
+        self.student_user.save()
+        self.student = Student.objects.create(user=self.student_user)
+
+        # Create a course assigned to the teacher
+        self.course = Course.objects.create(
+            title="Test Course", description="Test Description", instructor=self.teacher
+        )
+        # Enroll the student in the course
+        Enrollment.objects.create(user=self.student_user, course=self.course)
+
+    def test_enroll_in_course_as_student(self):
+        self.client.login(username="student", password="testpass")
+        response = self.client.post(reverse("enroll_in_course", args=[self.course.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            Enrollment.objects.filter(
+                user=self.student_user, course=self.course
+            ).exists()
+        )
+
+    def test_enroll_in_course_as_guest(self):
+        response = self.client.post(reverse("enroll_in_course", args=[self.course.id]))
+        self.assertEqual(response.status_code, 302)  # Should redirect to login
+        self.assertRedirects(
+            response, f"/accounts/login/?next=/enroll/{self.course.id}/"
+        )
+
+
+class ViewEnrollmentsTests(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+
+        # Create a user and then associate with a Teacher instance
+        self.teacher_user = User.objects.create_user(
+            username="teacher", password="testpass", email="teacher@example.com"
+        )
+        self.teacher_user.is_teacher = True
+        self.teacher_user.save()
+        self.teacher = Teacher.objects.create(user=self.teacher_user)
+
+        # Create a user and then associate with a Student instance
+        self.student_user = User.objects.create_user(
+            username="student", password="testpass", email="student@example.com"
+        )
+        self.student_user.is_student = True
+        self.student_user.save()
+        self.student = Student.objects.create(user=self.student_user)
+
+        # Create a course assigned to the teacher
+        self.course = Course.objects.create(
+            title="Test Course", description="Test Description", instructor=self.teacher
+        )
+
+        # Enroll the student in the course
+        Enrollment.objects.create(user=self.student_user, course=self.course)
+
+    def test_view_enrollments_as_teacher(self):
+        self.client.login(username="teacher", password="testpass")
+        response = self.client.get(reverse("view_enrollments", args=[self.course.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "student")
+
+    def test_view_enrollments_as_student(self):
+        self.client.login(username="student", password="testpass")
+        response = self.client.get(reverse("view_enrollments", args=[self.course.id]))
+        self.assertEqual(response.status_code, 403)  # Students should not access this
+
+
+class CreateCourseViewTests(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.teacher_user = User.objects.create_user(
+            username="teacher", password="testpass", email="email@gmail.com"
+        )
+        self.teacher = Teacher.objects.create(user=self.teacher_user)
+
+    def test_create_course_view_for_non_teacher(self):
+        non_teacher_user = User.objects.create_user(
+            username="nonteacher", password="testpass"
+        )
+        self.client.login(username="nonteacher", password="testpass")
+        response = self.client.get(reverse("create_course"))
+        self.assertRedirects(response, reverse("main_page"))
