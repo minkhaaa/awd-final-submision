@@ -55,7 +55,11 @@ def news_feed_view(request):
 
     # Check if the request is an HTMX request for infinite scroll
     if "HX-Request" in request.headers and "page" in request.GET:
-        return render(request, "accounts/_status_updates.html", {"page_obj": page_obj})
+        return render(
+            request,
+            "courses/_pagination_handler.html",
+            {"page_obj": page_obj, "page_number": page_number},
+        )
 
     # Pass all necessary context to the main page template
     return render(
@@ -66,6 +70,7 @@ def news_feed_view(request):
             "page_obj": page_obj,  # Pass the paginated status updates
             "courses": courses,  # Pass the courses
             "enrolled_course_ids": enrolled_course_ids,  # Pass the enrolled course IDs
+            "page_number": page_number,
         },
     )
 
