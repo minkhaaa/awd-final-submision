@@ -40,6 +40,7 @@ urlpatterns = [
     ),
     path("courses/create/", views.create_course_view, name="create_course"),
     path("news-feed/", views.news_feed_view, name="news_feed"),
+    path("search/", views.news_feed_view, name="user_list"),
 ]
 
 if settings.DEBUG:

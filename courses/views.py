@@ -1,5 +1,6 @@
 import os
 from logging import log
+from re import search
 
 from django.contrib.auth.decorators import login_required
 from django.core.files.storage import FileSystemStorage
@@ -10,7 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 
 from accounts.forms import StatusUpdateForm
-from accounts.models import StatusUpdate, Student
+from accounts.models import StatusUpdate, Student, Teacher, User
 
 from .forms import RatingForm  # Assuming you have a form for submitting ratings
 from .forms import CourseForm
@@ -44,6 +45,19 @@ def news_feed_view(request):
     # Fetch all courses to be passed to the 'tabs_with_courses.html'
     courses = Course.objects.all()
     enrolled_course_ids = []
+    search_query = request.GET.get("search", "")
+
+    # Base QuerySet for filtering
+    if request.user.is_authenticated and request.user.is_teacher:
+        # Teachers can view and search all users
+        users = User.objects.all()
+    else:
+        # Students and guests can only view and search students
+        users = User.objects.filter(is_student=True)
+
+    # Apply search query if provided
+    if search_query:
+        users = users.filter(username__icontains=search_query)
 
     # If the user is authenticated, get their enrolled course IDs
     if request.user.is_authenticated:
@@ -71,6 +85,7 @@ def news_feed_view(request):
             "courses": courses,  # Pass the courses
             "enrolled_course_ids": enrolled_course_ids,  # Pass the enrolled course IDs
             "page_number": page_number,
+            "users": users,
         },
     )
 
