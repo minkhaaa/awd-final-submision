@@ -54,7 +54,7 @@
       </div>
 
     <!--Enrollment list Div-->
-      {% if user.is_teacher %}
+      {% if user.is_teacher and user.username == course.instructor.user.username %}
 
         <div id="enrollments" class= "bg-gray-100 p-4 rounded-lg text-center mt-4">
           <button hx-get="{% url 'view_enrollments' course.id %}"
@@ -96,7 +96,7 @@
       </div>
     </div>
   {% endif %}
-  {% if user.is_teacher %}
+  {% if user.is_teacher and user.username == course.instructor.user.username %}
     <!-- Form to Add New Topic -->
     <div class="bg-white shadow-lg rounded-lg p-6">
       <h4 class="text-xl font-bold mb-4">Add New Topic</h4>

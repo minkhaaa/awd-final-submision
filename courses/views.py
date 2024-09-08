@@ -2,7 +2,7 @@ import os
 from logging import log
 from re import search
 
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import PermissionDenied, login_required
 from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator
 from django.db.models import Avg
