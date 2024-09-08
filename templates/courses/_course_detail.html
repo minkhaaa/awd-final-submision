@@ -1,69 +1,69 @@
-    {% extends "base.html" %}
-    {% block title %}{{ topic.title }}{% endblock %}
-    {% block content %}
+{% extends "base.html" %}
+{% block title %}{{ topic.title }}{% endblock %}
+{% block content %}
 
-<div class="w-full max-w-4xl mx-auto mt-8">
-  <div class="bg-white shadow-lg rounded-lg p-6 mb-8">
-    <h2 class="text-2xl font-bold mb-4">{{ course.title }}</h2>
-    <p class="text-sm text-gray-500">
-      Instructor: {{ course.instructor.user.username }}
-    </p>
-    <p>{{ course.description }}</p>
+  <div class="w-full max-w-4xl mx-auto mt-8">
+    <div class="bg-white shadow-lg rounded-lg p-6 mb-8">
+      <h2 class="text-2xl font-bold mb-4">{{ course.title }}</h2>
+      <p class="text-sm text-gray-500">
+        Instructor: {{ course.instructor.user.username }}
+      </p>
+      <p>{{ course.description }}</p>
 
     <!-- Aggregated Rating Score -->
-    <div class="mt-4">
-      {% if average_rating %}
-        <p class="text-lg font-semibold">Average Rating:
-          <span class="text-yellow-500">{{ average_rating }} / 5</span>
-        </p>
-      {% else %}
-        <p class="text-lg text-gray-500">No ratings yet.</p>
-      {% endif %}
-    </div>
+      <div class="mt-4">
+        {% if average_rating %}
+          <p class="text-lg font-semibold">Average Rating:
+            <span class="text-yellow-500">{{ average_rating }} / 5</span>
+          </p>
+        {% else %}
+          <p class="text-lg text-gray-500">No ratings yet.</p>
+        {% endif %}
+      </div>
 
     <!-- Buttons for Reviews, Feedback and Enroll -->
-    <div class="mt-4 flex space-x-4">
-      <button hx-get="{% url 'course_reviews' course.id %}"
-              hx-target="#reviews-container"
-              hx-swap="innerHTML"
-              class="text-blue-500 underline">
-        View All Reviews
-      </button>
-
-      {% if is_enrolled and not has_submitted_review %}
-        <button hx-get="{% url 'show_feedback_form' course.id %}"
-                hx-target="#feedback-form-container"
+      <div class="mt-4 flex space-x-4">
+        <button hx-get="{% url 'course_reviews' course.id %}"
+                hx-target="#reviews-container"
                 hx-swap="innerHTML"
-                class="text-green-500 underline">
-          Leave Feedback
+                class="text-blue-500 underline">
+          View All Reviews
         </button>
-      {% endif %}
-      {% if user.is_authenticated and not is_enrolled and not user.is_teacher %}
-        <button hx-get="{% url 'enroll_in_course' course.id %}"
-                hx-target="this"
-                hx-swap="outerHTML"
-                hx-trigger="click, keydown:Enter"
-                class="text-green-500 underline">
-          Enroll
-        </button>
-      {% elif user.is_student and is_enrolled %}
 
-      <span class="text-green-500 font-bold">Enrolled</span>
-      {% endif %}
+        {% if is_enrolled and not has_submitted_review %}
+          <button hx-get="{% url 'show_feedback_form' course.id %}"
+                  hx-target="#feedback-form-container"
+                  hx-swap="innerHTML"
+                  class="text-green-500 underline">
+            Leave Feedback
+          </button>
+        {% endif %}
+        {% if user.is_authenticated and not is_enrolled and not user.is_teacher %}
+          <button hx-get="{% url 'enroll_in_course' course.id %}"
+                  hx-target="this"
+                  hx-swap="outerHTML"
+                  hx-trigger="click, keydown:Enter"
+                  class="text-green-500 underline">
+            Enroll
+          </button>
+        {% elif user.is_student and is_enrolled %}
 
-    </div>
+          <span class="text-green-500 font-bold">Enrolled</span>
+        {% endif %}
+
+      </div>
 
     <!--Enrollment list Div-->
-    {% if user.is_teacher %}
+      {% if user.is_teacher %}
 
-    <div id="enrollments" class= "bg-gray-100 p-4 rounded-lg text-center mt-4">
-      <button hx-get="{% url 'view_enrollments' course.id %}"
-        hx-target="closest #enrollments"
-        hx-swap="outerHTML"
-        hx-trigger="click, keydown:Enter"
-        class="text-green-500 underline">
-  View Enrollments
-</button>
+        <div id="enrollments" class= "bg-gray-100 p-4 rounded-lg text-center mt-4">
+          <button hx-get="{% url 'view_enrollments' course.id %}"
+                  hx-target="closest #enrollments"
+                  hx-swap="outerHTML"
+                  hx-trigger="click, keydown:Enter"
+                  class="text-green-500 underline">
+            View Enrollments
+          </button>
       {% endif %}
 
       <!-- Reviews will be loaded here -->
@@ -80,25 +80,25 @@
   </div>
 
 
-</div>
-      <!-- Empty Div for Enrolled Topics Populate -->
-    <div id="enrolled-topics">
-      <!-- Feedback form will be loaded here -->
-    </div>
-
-{% if is_enrolled or user.is_teacher %}
-
-  <div class="bg-white shadow-lg rounded-lg p-6 mb-8">
-    <h2 class="text-xl font-bold mt-8"> Topics </h2>
-    <!-- List of Topics -->
-    <div id="topics-list" class="mt-4">
-      {% for topic in topics %} {% include "courses/_topic.html" %} {% endfor %}
-    </div>
   </div>
-        {% endif %}
-{% if user.is_teacher %}
+      <!-- Empty Div for Enrolled Topics Populate -->
+  <div id="enrolled-topics">
+      <!-- Feedback form will be loaded here -->
+  </div>
+
+  {% if is_enrolled or user.is_teacher %}
+
+    <div class="bg-white shadow-lg rounded-lg p-6 mb-8">
+      <h2 class="text-xl font-bold mt-8"> Topics </h2>
+    <!-- List of Topics -->
+      <div id="topics-list" class="mt-4">
+        {% for topic in topics %} {% include "courses/_topic.html" %} {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+  {% if user.is_teacher %}
     <!-- Form to Add New Topic -->
-<div class="bg-white shadow-lg rounded-lg p-6">
+    <div class="bg-white shadow-lg rounded-lg p-6">
       <h4 class="text-xl font-bold mb-4">Add New Topic</h4>
       <form
         id="form"
@@ -128,19 +128,19 @@
         </div>
         <div class="mb-4">
           <label for="attachment" class="block text-gray-700"
-            >Attachment (Optional)</label
-          >
-          <input
-            type="file"
-            name="attachment"
-            class="w-full border border-gray-300 rounded px-3 py-2"
-          />
-        </div>
-        <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded">
-          Add Topic
-        </button>
-      </form>
+          >Attachment (Optional)</label
+            >
+            <input
+              type="file"
+              name="attachment"
+              class="w-full border border-gray-300 rounded px-3 py-2"
+            />
+          </div>
+          <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded">
+            Add Topic
+          </button>
+        </form>
+      </div>
     </div>
-  </div>
-{% endif %}
+  {% endif %}
 {% endblock %}

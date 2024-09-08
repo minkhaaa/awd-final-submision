@@ -2,36 +2,36 @@
 {% block title %}Skill Hive - Main Page{% endblock %}
 
 {% block content %}
-<div class="container mx-auto mt-8 flex space-x-8">
+    <div class="container mx-auto mt-8 flex space-x-8">
 
     <!-- News Feed Section -->
-    <div class="w-1/2">
-        <h2 class="text-2xl font-bold mb-4">News Feed</h2>
+        <div class="w-1/2">
+            <h2 class="text-2xl font-bold mb-4">News Feed</h2>
 
         <!-- Status Update Form -->
-        {% if user.is_authenticated %}
-        <div id="status-update-form" class="mb-4">
-            <form method="post" action="{% url 'main_page' %}" hx-post="{% url 'main_page' %}" hx-target="#news-feed" hx-swap="beforebegin">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-400 transition duration-300">Post</button>
-            </form>
-        </div>
-        {% endif %}
+            {% if user.is_authenticated %}
+                <div id="status-update-form" class="mb-4">
+                    <form method="post" action="{% url 'main_page' %}" hx-post="{% url 'main_page' %}" hx-target="#news-feed" hx-swap="beforebegin">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-400 transition duration-300">Post</button>
+                    </form>
+                </div>
+            {% endif %}
 
         <!-- Dynamic News Feed Items with HTMX for Infinite Scrolling -->
-        <div id="news-feed">
-            {% include 'accounts/_status_updates.html' %}
+            <div id="news-feed">
+                {% include 'accounts/_status_updates.html' %}
+            </div>
+
+            {% if page_obj.has_next %}
+                <div id="load-more-trigger" hx-get="?page={{ page_obj.next_page_number }}" hx-trigger="revealed" hx-target="#news-feed" hx-swap="beforeend">
+                    Loading more...
+                </div>
+            {% endif %}
         </div>
 
-        {% if page_obj.has_next %}
-            <div id="load-more-trigger" hx-get="?page={{ page_obj.next_page_number }}" hx-trigger="revealed" hx-target="#news-feed" hx-swap="beforeend">
-                Loading more...
-            </div>
-        {% endif %}
-    </div>
-
     <!-- Courses Section -->
-    {% include 'courses/tabs_with_courses.html' %}
-</div>
+        {% include 'courses/tabs_with_courses.html' %}
+    </div>
 {% endblock %}
