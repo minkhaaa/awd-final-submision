@@ -32,6 +32,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
+    "chat",
+    "channels",
     "tailwind",
     "theme",
     "accounts",
@@ -146,3 +149,12 @@ LOGIN_REDIRECT_URL = (
     "main_page"  # Adjust this to redirect to your main page after login
 )
 LOGOUT_REDIRECT_URL = "main_page"  # Adjust this to redirect after logout
+ASGI_APPLICATION = "config.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
