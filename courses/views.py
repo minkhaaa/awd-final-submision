@@ -4,6 +4,7 @@ from re import search
 
 from django.contrib.auth.decorators import PermissionDenied, login_required
 from django.core.files.storage import FileSystemStorage
+from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models import Avg
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
@@ -229,6 +230,8 @@ def submit_feedback_view(request, course_id):
 def enroll_in_course(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     topics = course.topics.all()
+
+    # Check if the user is already enrolled
     if not Enrollment.objects.filter(user=request.user, course=course).exists():
         Enrollment.objects.create(user=request.user, course=course)
 
@@ -237,6 +240,15 @@ def enroll_in_course(request, course_id):
             request.user.is_student = True
             request.user.save()
             Student.objects.create(user=request.user)
+
+        # Prepare the email message
+        subject = "New Enrollment in Your Course"
+        message = f'User {request.user.username} has enrolled in your course "{course.title}".'
+        from_email = "noreply@skillhive.com"
+        recipient_list = [course.instructor.user.email]
+
+        # Simulate sending email (prints to console)
+        send_mail(subject, message, from_email, recipient_list)
 
     # Partial update for the button
     response_content = '<span class="text-green-500 font-bold">Enrolled</span>'
@@ -330,9 +342,23 @@ def add_topic(request, course_id):
         body = request.POST.get("body")
         attachment = request.FILES.get("attachment")
 
+        # Create the new topic
         topic = Topic.objects.create(
             course=course, title=title, body=body, attachment=attachment
         )
+
+        # Get the list of enrolled students
+        enrollments = Enrollment.objects.filter(course=course)
+        recipient_list = [enrollment.user.email for enrollment in enrollments]
+
+        # Prepare and send email if there are recipients
+        if recipient_list:
+            subject = f"New Topic Added to {course.title}"
+            message = f'A new topic titled "{title}" has been added to the course "{course.title}".\n\n{body}'
+            from_email = "noreply@skillhive.com"
+
+            # Send the email to all enrolled students
+            send_mail(subject, message, from_email, recipient_list)
 
         # Render the new topic as a partial to be swapped in by HTMX
         return render(request, "courses/_topic.html", {"topic": topic})
