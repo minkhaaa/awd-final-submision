@@ -1,7 +1,7 @@
 {% for update in page_obj %}
     <div class="bg-white shadow rounded p-4 mb-4">
         <p class="font-bold">
-            <a href="{% url 'profile_page' update.user.username %}" class="text-blue-500 hover:underline">{{ update.user.username }}</a>
+            <a hx-boost="False" href="{% url 'profile_page' update.user.username %}" class="text-blue-500 hover:underline">{{ update.user.username }}</a>
         </p>
         <p>{{ update.content }}</p>
         <p class="text-sm text-gray-500">{{ update.updated_at|date:"F j, Y, g:i a" }}</p>
