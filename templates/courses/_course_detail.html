@@ -64,18 +64,19 @@
                   class="text-green-500 underline">
             View Enrollments
           </button>
+        </div>
       {% endif %}
-{% if user.is_teacher or is_enrolled %}
-    <div id="live-discussion" class="bg-gray-100 p-4 rounded-lg text-center mt-4">
+      {% if user.is_teacher or is_enrolled %}
+        <div id="live-discussion" class="bg-gray-100 p-4 rounded-lg text-center mt-4">
           <button hx-get="{% url 'room' room_name=course.id %}"
-                hx-target="closest #live-discussion"
-                hx-swap="outerHTML"
-                hx-trigger="click, keydown:Enter"
-                class="text-green-500 underline">
+                  hx-target="closest #live-discussion"
+                  hx-swap="outerHTML"
+                  hx-trigger="click, keydown:Enter"
+                  class="text-green-500 underline">
             Live Discussion
-        </button>
-    </div>
-{% endif %}
+          </button>
+        </div>
+      {% endif %}
 
     </div>
     <!-- Empty Div for Reviews -->
@@ -91,8 +92,8 @@
     <div id="live-chat" class="mt-4">
       <!-- Feedback form will be loaded here -->
     </div>
-      <div id="hide-button">
-      </div>
+    <div id="hide-button">
+    </div>
   </div>
 
 

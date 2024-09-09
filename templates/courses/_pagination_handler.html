@@ -2,8 +2,8 @@
 {% if page_obj.has_next %}
     <div id="load-more-trigger" hx-get="?page={{ page_obj.next_page_number }}" hx-trigger="revealed" hx-target="#news-feed" hx-swap="beforeend">
         {% if page_number != 1 %}
-        {% include 'accounts/_status_updates.html' %}
-    {% endif %}
+            {% include 'accounts/_status_updates.html' %}
+        {% endif %}
     </div>
 {% else %}
     <div class="text-center py-4 text-gray-500">

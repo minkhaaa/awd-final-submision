@@ -22,10 +22,10 @@
         <!-- Dynamic News Feed Items with HTMX for Infinite Scrolling -->
         <!-- <div class=" max-h-[calc(100vh-40rem)] overflow-y-auto"> -->
             <div id="news-feed" >
-      {% include 'accounts/_status_updates.html' %}
+                {% include 'accounts/_status_updates.html' %}
             </div>
 
-        {% include 'courses/_pagination_handler.html' %}
+            {% include 'courses/_pagination_handler.html' %}
         <!-- </div> -->
         </div>
         <!-- Right Side: Tab Group and Users List -->
@@ -40,9 +40,9 @@
             <div class="users-list h-[41vh] bg-white shadow-lg p-4 overflow-y-auto">
 
                 {% if user.is_authenticated and user.is_teacher %}
-                <h2 class="text-2xl font-bold mb-4">Users List</h2>
+                    <h2 class="text-2xl font-bold mb-4">Users List</h2>
                 {% else %}
-                <h2 class="text-2xl font-bold mb-4">Classmates</h2>
+                    <h2 class="text-2xl font-bold mb-4">Classmates</h2>
                 {% endif %}
 
                 <!-- Search Form -->
@@ -70,14 +70,14 @@
                         </thead>
                         <tbody>
                             {% for user in users %}
-                            <tr class="border-b">
-                                <td class="py-2 px-4">
+                                <tr class="border-b">
+                                    <td class="py-2 px-4">
 
-                                <a href="{% url 'profile_page' user.username %}" class="text-blue-500 hover:underline">{{ user.username }}</a>
-</td>
-                                <td class="py-2 px-4">{{ user.email }}</td>
-                                <td class="py-2 px-4">{{ user.date_joined|date:"F j, Y" }}</td>
-                            </tr>
+                                        <a href="{% url 'profile_page' user.username %}" class="text-blue-500 hover:underline">{{ user.username }}</a>
+                                    </td>
+                                    <td class="py-2 px-4">{{ user.email }}</td>
+                                    <td class="py-2 px-4">{{ user.date_joined|date:"F j, Y" }}</td>
+                                </tr>
                             {% endfor %}
                         </tbody>
                     </table>
