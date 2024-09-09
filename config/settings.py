@@ -147,9 +147,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 AUTH_USER_MODEL = "accounts.User"
-LOGIN_REDIRECT_URL = (
-    "main_page"  # Adjust this to redirect to your main page after login
-)
+LOGIN_REDIRECT_URL = "main_page"  # Adjust this to redirect after login
 LOGOUT_REDIRECT_URL = "main_page"  # Adjust this to redirect after logout
 ASGI_APPLICATION = "config.asgi.application"
 CHANNEL_LAYERS = {
