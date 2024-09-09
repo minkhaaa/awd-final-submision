@@ -6,10 +6,39 @@
 
     <!-- Profile Information Section -->
         <div class="w-full">
-            <div class="bg-gray-50 py-8 text-center shadow-sm">
-                <h1 class="text-2xl font-bold">{{ profile_user.first_name }} {{ profile_user.last_name }}</h1>
-                <p class="text-gray-600">Joined on {{ profile_user.date_joined|date:"F j, Y" }}</p>
-            </div>
+<div class="bg-gray-50 py-8 text-center shadow-sm">
+    <h1 class="text-2xl font-bold">{{ profile_user.first_name }} {{ profile_user.last_name }}</h1>
+    <p class="text-gray-600">Joined on {{ profile_user.date_joined|date:"F j, Y" }}</p>
+
+    <!-- Block/Unblock Button -->
+    {% if user != profile_user %}
+        {% if has_blocked %}
+            <form method="POST" action="{% url 'unblock_user' profile_user.username %}">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-400">
+                    Unblock {{ profile_user.username }}
+                </button>
+            </form>
+        {% else %}
+            <form method="POST" action="{% url 'block_user' profile_user.username %}">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-400">
+                    Block {{ profile_user.username }}
+                </button>
+            </form>
+        {% endif %}
+    {% endif %}
+
+    <!-- Remove User Button (Visible only to Teachers) -->
+    {% if user.is_teacher and user != profile_user %}
+        <form method="POST" action="{% url 'remove_user' profile_user.username %}">
+            {% csrf_token %}
+            <button type="submit" class="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-400 mt-4">
+                Remove {{ profile_user.username }} from System
+            </button>
+        </form>
+    {% endif %}
+</div>
         </div>
 
     <!-- News Feed Section -->

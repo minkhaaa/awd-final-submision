@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 
 from accounts.forms import StatusUpdateForm
-from accounts.models import StatusUpdate, Student, Teacher, User
+from accounts.models import Block, StatusUpdate, Student, Teacher, User
 
 from .forms import RatingForm  # Assuming you have a form for submitting ratings
 from .forms import CourseForm
@@ -36,8 +36,27 @@ def news_feed_view(request):
     else:
         form = StatusUpdateForm()
 
-    # Fetch all status updates for the news feed
-    updates = StatusUpdate.objects.all().order_by("-updated_at")
+    # Determine blocked and blocking users
+    if request.user.is_authenticated:
+        # Get IDs of users who have blocked the current user
+        blocked_by_user_ids = Block.objects.filter(blocked=request.user).values_list(
+            "blocker_id", flat=True
+        )
+
+        # Get IDs of users whom the current user has blocked
+        blocking_user_ids = Block.objects.filter(blocker=request.user).values_list(
+            "blocked_id", flat=True
+        )
+
+        # Combine both sets of user IDs
+        blocked_user_ids = set(blocked_by_user_ids) | set(blocking_user_ids)
+    else:
+        blocked_user_ids = []
+
+    # Fetch all status updates for the news feed, excluding updates from blocked users
+    updates = StatusUpdate.objects.exclude(user__id__in=blocked_user_ids).order_by(
+        "-updated_at"
+    )
     paginator = Paginator(updates, 10)  # Display 10 updates per page
     page_number = request.GET.get("page", 1)
     page_obj = paginator.get_page(page_number)
@@ -47,13 +66,13 @@ def news_feed_view(request):
     enrolled_course_ids = []
     search_query = request.GET.get("search", "")
 
-    # Base QuerySet for filtering
+    # Base QuerySet for filtering users
     if request.user.is_authenticated and request.user.is_teacher:
         # Teachers can view and search all users
-        users = User.objects.all()
+        users = User.objects.exclude(id__in=blocked_user_ids)
     else:
-        # Students and guests can only view and search students
-        users = User.objects.filter(is_student=True)
+        # Students and guests can only view and search students, excluding blocked ones
+        users = User.objects.filter(is_student=True).exclude(id__in=blocked_user_ids)
 
     # Apply search query if provided
     if search_query:
@@ -85,7 +104,7 @@ def news_feed_view(request):
             "courses": courses,  # Pass the courses
             "enrolled_course_ids": enrolled_course_ids,  # Pass the enrolled course IDs
             "page_number": page_number,
-            "users": users,
+            "users": users,  # Pass the filtered user list
         },
     )
 
