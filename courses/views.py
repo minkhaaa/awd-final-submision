@@ -42,7 +42,7 @@ def news_feed_view(request):
     page_number = request.GET.get("page", 1)
     page_obj = paginator.get_page(page_number)
 
-    # Fetch all courses to be passed to the 'tabs_with_courses.html'
+    # Fetch all courses to be passed to the '_tabs_with_courses.html'
     courses = Course.objects.all()
     enrolled_course_ids = []
     search_query = request.GET.get("search", "")
@@ -124,7 +124,7 @@ def all_courses_view(request):
         )
     return render(
         request,
-        "courses/tabs_with_courses.html",
+        "courses/_tabs_with_courses.html",
         {
             "courses": courses,
             "active_tab": "all_courses",
@@ -161,7 +161,7 @@ def my_courses_view(request):
         courses = Course.objects.none()
     return render(
         request,
-        "courses/tabs_with_courses.html",
+        "courses/_tabs_with_courses.html",
         {"courses": courses, "active_tab": "my_courses"},
     )
 

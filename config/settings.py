@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     "channels",
     "tailwind",
     "theme",
+    "rest_framework",
+    "api",
     "accounts",
     "courses",
     "django_htmx",

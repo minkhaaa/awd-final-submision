@@ -1,0 +1,43 @@
+
+{% extends "base.html" %}
+{% block title %}Skill Hive - Developers Info{% endblock %}
+
+{% block content %}
+
+<body class="bg-gray-100 font-sans leading-normal tracking-normal" >
+    <div class="container mx-auto mt-8 p-6 bg-white rounded-lg shadow-lg">
+        <h1 class="text-3xl font-bold mb-6 text-gray-800">Skill Hive Developer API</h1>
+        <p class="text-gray-700 mb-6">Welcome to the Skill Hive API! You can use the following endpoints to interact with our platform.</p>
+
+        <h2 class="text-xl font-bold text-gray-800 mt-6 mb-4">API Endpoints:</h2>
+        <ul class="list-disc list-inside pl-4" hx-boost="False">
+            <li class="mb-2">
+                <strong class="text-gray-800">Users:</strong>
+                <a href="/api/users/" class="text-blue-500 hover:text-blue-700 underline">/api/users/</a>
+            </li>
+            <li class="mb-2">
+                <strong class="text-gray-800">Status Updates:</strong>
+                <a href="/api/status-updates/" class="text-blue-500 hover:text-blue-700 underline">/api/status-updates/</a>
+            </li>
+            <li class="mb-2">
+                <strong class="text-gray-800">Courses:</strong>
+                <a href="/api/courses/" class="text-blue-500 hover:text-blue-700 underline">/api/courses/</a>
+            </li>
+            <li class="mb-2">
+                <strong class="text-gray-800">Topics:</strong>
+                <a href="/api/topics/" class="text-blue-500 hover:text-blue-700 underline">/api/topics/</a>
+            </li>
+            <li class="mb-2">
+                <strong class="text-gray-800">Enrollments:</strong>
+                <a href="/api/enrollments/" class="text-blue-500 hover:text-blue-700 underline">/api/enrollments/</a>
+            </li>
+            <li class="mb-2">
+                <strong class="text-gray-800">Ratings:</strong>
+                <a href="/api/ratings/" class="text-blue-500 hover:text-blue-700 underline">/api/ratings/</a>
+            </li>
+        </ul>
+
+        <p class="mt-6 text-gray-700">Refer to the <strong class="font-semibold text-gray-800">Django REST Framework</strong> documentation for more details on how to interact with these endpoints.</p>
+    </div>
+</body>
+{% endblock %}
